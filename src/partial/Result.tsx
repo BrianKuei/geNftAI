@@ -1,5 +1,6 @@
 import React from "react";
 import ButtonComponent from "../component/Button";
+import { useNavigate } from "react-router-dom";
 
 interface IConfirm {
   // TODO:
@@ -8,13 +9,16 @@ interface IConfirm {
 }
 
 const Confirm = ({ projectInfo, onChange }: IConfirm) => {
+  const navigate = useNavigate();
   const handleOnClick = () => {
     // TODO:
     // share link to TG channel
   };
 
   const handleOpenBrowser = () => {
-    window.open(projectInfo?.resultLink);
+    navigate(
+      `/geNftAI/web?imgUrl=${projectInfo?.imgUrl}&projectName=${projectInfo?.projectName}`
+    );
   };
 
   return (
