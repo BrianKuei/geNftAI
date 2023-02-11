@@ -8,9 +8,19 @@ import Landing from "./partial/Landing";
 import Confirm from "./partial/Confirm";
 import Result from "./partial/Result";
 
+export type Info = Partial<{
+  description: string;
+  imgUrl: string
+  mintAmount: number
+  projectName: string;
+  resultLink: string
+  term: boolean,
+  jsonUrl: string
+}>
+
 function App() {
   const [steps, setSteps] = useState(0);
-  const [projectInfo, setProjectInfo] = useState({
+  const [projectInfo, setProjectInfo] = useState<Info>({
     resultLink: "https://www.google.com/",
     imgUrl: "https://reurl.cc/WDa5VZ",
   });
@@ -54,6 +64,7 @@ function App() {
       component: (
         <Confirm
           projectInfo={projectInfo}
+          setProjectInfo={setProjectInfo}
           onChange={(props) => handleContentOnChange({ props, step: 2 })}
         />
       ),
