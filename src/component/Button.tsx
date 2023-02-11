@@ -1,21 +1,8 @@
 import React from "react";
-import { Button } from "antd";
+import Button, { ButtonProps } from "antd/lib/button";
 
-interface IButtonComponent {
+interface IButtonComponent extends ButtonProps {
   text?: string;
-  htmlType?: "submit" | "button" | "reset" | undefined;
-  disabled?: boolean;
-  type?:
-    | "text"
-    | "link"
-    | "ghost"
-    | "default"
-    | "primary"
-    | "dashed"
-    | undefined;
-  loading?: boolean;
-  className?: string;
-  onClick?(): void;
 }
 
 const ButtonComponent = ({
@@ -26,6 +13,7 @@ const ButtonComponent = ({
   loading = false,
   className,
   onClick,
+  ...res
 }: IButtonComponent) => {
   return (
     <Button
@@ -35,6 +23,7 @@ const ButtonComponent = ({
       type={type}
       htmlType={htmlType}
       onClick={onClick}
+      {...res}
     >
       {text}
     </Button>

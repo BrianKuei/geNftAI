@@ -31,7 +31,7 @@ const WebSiteComponent = () => {
           <div>Subscribe</div>
         </div>
       </div>
-      <ButtonComponent type="danger" text="Mint" onClick={() => { }} />
+      <ButtonComponent danger type="primary" text="Mint" onClick={() => { }} />
     </div>
   );
 };
