@@ -1,6 +1,5 @@
-import TonWeb from 'tonweb'; // should be on top
-import '@twa-dev/sdk';
 import React from 'react';
+import '@twa-dev/sdk';
 import { TonConnectButton } from '@tonconnect/ui-react';
 import { useDeployer } from './hooks/useDeployer';
 import './App.css';
