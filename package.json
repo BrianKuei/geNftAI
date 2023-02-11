@@ -1,7 +1,7 @@
 {
   "name": "genftai",
   "private": true,
-  "homepage": "https://osmanthustonx.github.io/geNftAI",
+  "homepage": "https://0x171-0.github.io/geNftAI",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -18,16 +18,13 @@
     "@ton-community/func-js": "^0.5.0",
     "@tonconnect/ui-react": "^0.0.14",
     "@twa-dev/sdk": "^6.4.2",
-    "antd": "^4.24.7",
     "gh-pages": "^5.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
     "ton": "^13.3.0",
     "ton-core": "^0.47.1",
-    "ton-crypto": "^3.2.0",
     "tonweb": "^0.0.59",
-    "ts-node": "^10.9.1",
     "vite-plugin-node-polyfills": "^0.7.0"
   },
   "devDependencies": {

@@ -1,44 +1,73 @@
-@import "antd/dist/antd.css";
-
-@tailwind base;
-@layer base {
-  html,
-  body {
-    @layer w-full h-full text-gray-800 m-0 select-none;
-
-    -webkit-touch-callout: none;
-    -webkit-overflow-scrolling: touch;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  body {
-    @layer font-body text-gray-900 bg-gray-100;
-  }
-
-  *,
-  *:before,
-  *:after {
-    @layer box-border;
-  }
+:root {
+  --tg-theme-bg-color: #efeff3;
+  --tg-theme-button-color: #63d0f9;
+  --tg-theme-button-text-color: black;
 }
 
-@tailwind utilities;
-@layer utilities {
-  .pb-safe {
-    padding-bottom: constant(safe-area-inset-bottom);
-    padding-bottom: env(safe-area-inset-bottom);
+.App {
+  height: 100vh;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+}
+
+.Container {
+  padding: 2rem;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.Button {
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+.Disabled {
+  filter: brightness(50%);
+  cursor: initial;
+}
+
+.Button.Active:hover {
+  filter: brightness(105%);
+}
+
+.Hint {
+  color: var(--tg-theme-hint-color);
+}
+
+.Card {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tg-theme-bg-color: #131415;
+    --tg-theme-text-color: #fff;
+    --tg-theme-button-color: #32a6fb;
+    --tg-theme-button-text-color: #fff;
   }
-  .pt-safe {
-    padding-top: constant(safe-area-inset-top);
-    padding-top: env(safe-area-inset-top);
+
+  .Card {
+    background-color: var(--tg-theme-bg-color);
+    filter: brightness(165%);
   }
-  .pl-safe {
-    padding-left: constant(safe-area-inset-left);
-    padding-left: env(safe-area-inset-left);
-  }
-  .pr-safe {
-    padding-right: constant(safe-area-inset-right);
-    padding-right: env(safe-area-inset-right);
+
+  .CounterValue {
+    border-radius: 16px;
+    color: white;
+    padding: 10px;
   }
 }
