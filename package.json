@@ -1,16 +1,21 @@
 {
   "name": "genftai",
   "private": true,
+  "homepage": "https://BrianKuei.github.io/geNftAI",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@orbs-network/ton-access": "^2.2.2",
     "@tonconnect/ui-react": "^0.0.14",
+    "gh-pages": "^5.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ton": "^13.3.0",
