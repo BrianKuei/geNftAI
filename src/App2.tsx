@@ -9,7 +9,7 @@ import Confirm from "./partial/Confirm";
 import Result from "./partial/Result";
 
 function App() {
-  const [steps, setSteps] = useState(0);
+  const [steps, setSteps] = useState(2);
 
   const handleContentOnChange = ({ props, step }: any) => {
     console.log("props", props);
