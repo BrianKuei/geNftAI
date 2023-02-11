@@ -78,7 +78,7 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
-      className="h-full"
+      className="w-full h-full flex flex-col"
     >
       <Form.Item
         label="Project Name"
@@ -114,12 +114,12 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
         </Checkbox>
       </Form.Item>
 
-      <Form.Item className="absolute bottom-0">
+      <Form.Item>
         <ButtonComponent
           text={"Gen My NFT"}
           htmlType="submit"
           loading={loading}
-          style={{ backgroundColor: "#1890ff", color: "#ffffff" }}
+          style={{ backgroundColor: "#1890ff", color: "#ffffff",width: "100%"}}
         />
       </Form.Item>
     </Form>
