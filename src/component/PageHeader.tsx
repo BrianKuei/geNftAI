@@ -1,5 +1,6 @@
 import React from "react";
 import { PageHeader } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 
 interface IPageHeader {
   title?: string;
@@ -24,8 +25,7 @@ const PageHeaderComponent = ({
       ghost={false}
       onBack={handleOnBack}
       title={title}
-      // TODO: close icon
-      extra={<div onClick={handleOnClose}>X</div>}
+      extra={<CloseOutlined onClick={handleOnClose} />}
     ></PageHeader>
   );
 };
