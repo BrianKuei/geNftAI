@@ -13,7 +13,7 @@ const manifestUrl = 'https://osmanthustonx.github.io/geNftAI/tonconnect-manifest
 const router = createBrowserRouter([
   {
     path: "/geNftAI",
-    element: <App />,
+    element: <App2 />,
   },
 ]);
 
