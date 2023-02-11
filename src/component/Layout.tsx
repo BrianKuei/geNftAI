@@ -2,13 +2,13 @@ import { Layout } from "antd";
 import React from "react";
 import PageHeader from "./PageHeader";
 
-const { Header, Footer, Sider, Content } = Layout;
-
 const LayoutComponent = ({ children }: { children: JSX.Element }) => {
   return (
-    <Layout>
+    <Layout className="w-full h-screen">
       <PageHeader />
-      <Content className="h-full border">{children}</Content>
+      <Layout.Content className="w-full h-full border p-4 relative">
+        {children}
+      </Layout.Content>
     </Layout>
   );
 };
