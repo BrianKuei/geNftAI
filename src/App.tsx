@@ -9,7 +9,7 @@ import Confirm from "./partial/Confirm";
 import Result from "./partial/Result";
 
 function App() {
-  const [steps, setSteps] = useState(3);
+  const [steps, setSteps] = useState(0);
   const [projectInfo, setProjectInfo] = useState({
     resultLink: "https://www.google.com/",
     imgUrl: "https://reurl.cc/WDa5VZ",
