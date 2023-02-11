@@ -15,7 +15,7 @@ export function useDeployer() {
     const { sender } = useTonConnect();
 
     // const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', { apiKey: '' }));
-    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', { apiKey: 'bef4b75fea1e9a5a385731779579569cb40e95eacee6d37620602b07efb13ce8' }));
+    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', { apiKey: '' }));
 
     const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
