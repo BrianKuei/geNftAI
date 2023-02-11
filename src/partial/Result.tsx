@@ -2,42 +2,42 @@ import React from "react";
 import ButtonComponent from "../component/Button";
 
 interface IConfirm {
+  // TODO:
+  projectInfo?: any;
   onChange?(props: any): void;
 }
 
-const Confirm = ({ onChange }: IConfirm) => {
+const Confirm = ({ projectInfo, onChange }: IConfirm) => {
   const handleOnClick = () => {
-
     // TODO:
-    // onChange && onChange(true);
+    // share link to TG channel
   };
 
-  const handleOnReset = () => {
-    onChange && onChange({ isBack: true });
+  const handleOpenBrowser = () => {
+    window.open(projectInfo?.resultLink);
   };
 
   return (
     <div className="h-full space-y-2">
       <div className="w-full space-y-2">
         <div className="text-bold">Preview</div>
-        {/* TODO: */}
-        <iframe className="w-full border" />
+        <iframe
+          src={projectInfo?.resultLink || "https://www.google.com/"}
+          className="w-full"
+        >
+          你的瀏覽器不支援 iframe
+        </iframe>
       </div>
 
       <div className="w-full space-y-2">
         <div className="text-bold">Link</div>
-        {/* TODO: */}
-        <p className="text-gray-300">https://</p>
+        <p className="text-gray-300">
+          {projectInfo?.resultLink || "https://www.google.com/"}
+        </p>
       </div>
 
       <div className="absolute bottom-[3vh] space-x-2">
-        {/* TODO: */}
-        <div>
-          Lorem Ipsum has been the industry's standard dummy text ever since the
-          1500s, when an unknown printer took a galley of type and scrambled it
-          to make a type.
-        </div>
-        <ButtonComponent text="Open in Browser" onClick={handleOnReset} />
+        <ButtonComponent text="Open in Browser" onClick={handleOpenBrowser} />
         <ButtonComponent text="Share" type="primary" onClick={handleOnClick} />
       </div>
     </div>

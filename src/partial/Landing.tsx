@@ -12,9 +12,10 @@ const Landing = ({ onChange }: ILanding) => {
 
   return (
     <div className="h-full space-y-2">
-      <iframe src="https://reurl.cc/WDa5VZ/" className="w-full">
-        你的瀏覽器不支援 iframe
-      </iframe>
+      <img
+        src="https://cdn.pixabay.com/photo/2022/12/06/00/47/web3-7637962_1280.jpg"
+        alt="web3"
+      />
 
       <div className="text-2xl font-bold">No technology NFT release!</div>
       <div className="text-lg font-bold">

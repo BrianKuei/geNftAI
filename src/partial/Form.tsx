@@ -23,12 +23,12 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
     setLoading(true);
 
     const data = await getImage({ description });
-    if (!data?.url) {
+    if (!data?.imgUrl) {
       setLoading(false);
       return toast.error(data?.message);
     }
 
-    onChange && onChange({ ...values, url: data?.url });
+    onChange && onChange({ ...values, imgUrl: data?.imgUrl });
     setLoading(false);
 
     setTimeout(() => {
@@ -43,7 +43,7 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
 
   const getImage = async (body: { description: string }) => {
     const API_URL = "https://genftai.glitch.me/api/generateimg";
-    let result = { message: "", url: "" };
+    let result = {message: "", imgUrl: ""};
 
     await fetch(API_URL, {
       body: JSON.stringify(body),
@@ -63,7 +63,7 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
         const { Message, url } = res;
 
         result.message = Message;
-        result.url = url;
+        result.imgUrl = url;
       })
       .catch((e: any) => console.error(e));
 
