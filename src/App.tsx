@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import "@twa-dev/sdk";
 
@@ -10,8 +10,18 @@ import Result from "./partial/Result";
 
 function App() {
   const [steps, setSteps] = useState(0);
+  const [projectInfo, setProjectInfo] = useState({
+    resultLink: "https://www.google.com/",
+    imgUrl: "https://reurl.cc/WDa5VZ",
+  });
+
+  useEffect(() => {
+    console.log("projectInfo === ", projectInfo);
+  }, [projectInfo]);
 
   const handleContentOnChange = ({ props, step }: any) => {
+    setProjectInfo((prev) => ({ ...prev, ...props }));
+
     /** handle Confirm page on reset */
     if (props?.isBack) return setSteps((prev) => prev - 1);
 
@@ -47,6 +57,7 @@ function App() {
       title: "Confirm",
       component: (
         <Confirm
+          projectInfo={projectInfo}
           onChange={(props) => handleContentOnChange({ props, step: 2 })}
         />
       ),
@@ -56,6 +67,7 @@ function App() {
       title: "GENFTAPI",
       component: (
         <Result
+          projectInfo={projectInfo}
           onChange={(props) => handleContentOnChange({ props, step: 3 })}
         />
       ),

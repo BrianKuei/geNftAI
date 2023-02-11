@@ -2,10 +2,13 @@ import React from "react";
 import ButtonComponent from "../component/Button";
 
 interface IConfirm {
+  // TODO:
+  projectInfo?: any;
   onChange?(props: any): void;
 }
 
-const Confirm = ({ onChange }: IConfirm) => {
+const Confirm = ({ projectInfo, onChange }: IConfirm) => {
+  console.log("projectInfo", projectInfo);
   const handleOnClick = () => {
     window.open(`ton://transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000`, '_blank');
     onChange && onChange(true);
@@ -17,7 +20,9 @@ const Confirm = ({ onChange }: IConfirm) => {
 
   return (
     <div className="h-full">
-      <img src="https://fakeimg.pl/300/" alt="img" className="w-full" />
+      <iframe src={projectInfo?.imgUrl} className="w-full min-h-[300px]">
+        你的瀏覽器不支援 iframe
+      </iframe>
 
       <div className="absolute bottom-[3vh] space-x-2">
         <ButtonComponent text="Reset" onClick={handleOnReset} />

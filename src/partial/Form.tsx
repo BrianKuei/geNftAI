@@ -15,32 +15,20 @@ interface IFormData {
 }
 
 const FormComponent = ({ onChange }: IFFormComponent) => {
-  const initialValues = {
-    projectName: "asd",
-    term: true,
-    mintAmount: 1,
-    description: "afwef",
-  };
+  const initialValues = { term: true, mintAmount: 1 };
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
     const { description } = values;
     setLoading(true);
 
-    // const { message, url } = await getImage({ description });
+    const data = await getImage({ description });
+    if (!data?.imgUrl) {
+      setLoading(false);
+      return toast.error(data?.message);
+    }
 
-    // if (!url) {
-    //   setLoading(false);
-    //   return msg.error({
-    //     content: message,
-    //     className: "custom-class",
-    //     style: {
-    //       marginTop: "80vh",
-    //     },
-    //   });
-    // }
-
-    onChange && onChange(values);
+    onChange && onChange({ ...values, imgUrl: data?.imgUrl });
     setLoading(false);
 
     setTimeout(() => {
@@ -55,32 +43,31 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
 
   const getImage = async (body: { description: string }) => {
     const API_URL = "https://genftai.glitch.me/api/generateimg";
+    let result = {message: "", imgUrl: ""};
 
-    try {
-      fetch(API_URL, {
-        body: JSON.stringify(body),
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "user-agent": "Mozilla/4.0 MDN Example",
-          "content-type": "application/json",
-        },
-        method: "POST",
-        mode: "cors",
-        redirect: "follow",
-        referrer: "no-referrer",
+    await fetch(API_URL, {
+      body: JSON.stringify(body),
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "user-agent": "Mozilla/4.0 MDN Example",
+        "content-type": "application/json",
+      },
+      method: "POST",
+      mode: "cors",
+      redirect: "follow",
+      referrer: "no-referrer",
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        const { Message, url } = res;
+
+        result.message = Message;
+        result.imgUrl = url;
       })
-        .then((res) => res.json())
-        .then((res) => {
-          const { Message, url = "" } = res;
+      .catch((e: any) => console.error(e));
 
-          return { message: Message, url };
-        });
-    } catch {
-      (e: any) => console.error(e);
-    }
-
-    return { message: "Error:(錯誤內容)", url: "" };
+    return result;
   };
 
   return (
