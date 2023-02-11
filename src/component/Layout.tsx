@@ -2,10 +2,15 @@ import { Layout } from "antd";
 import React from "react";
 import PageHeader from "./PageHeader";
 
-const LayoutComponent = ({ children }: { children: JSX.Element }) => {
+interface ILayout {
+  children: JSX.Element;
+  onBack?(): void;
+}
+
+const LayoutComponent = ({ children, onBack }: ILayout) => {
   return (
     <Layout className="w-full h-screen">
-      <PageHeader />
+      <PageHeader onBack={onBack} />
       <Layout.Content className="w-full h-full border p-4 relative">
         {children}
       </Layout.Content>
