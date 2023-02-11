@@ -23,7 +23,7 @@ const Confirm = ({ projectInfo, onChange }: IConfirm) => {
 
   return (
     <div className="h-full">
-      <iframe src={projectInfo?.imgUrl} className="w-full">
+      <iframe src={projectInfo?.imgUrl} className="w-full min-h-[300px]">
         你的瀏覽器不支援 iframe
       </iframe>
 
