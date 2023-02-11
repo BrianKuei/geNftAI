@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Checkbox, Form, Input, InputNumber } from "antd";
-import msg from "antd/lib/message";
 import ButtonComponent from "../component/Button";
+import toast from "../utils/toast";
 
 interface IFFormComponent {
   onChange?(props: IFormData): void;
@@ -15,7 +15,12 @@ interface IFormData {
 }
 
 const FormComponent = ({ onChange }: IFFormComponent) => {
-  const initialValues = { term: true, mintAmount: 1 };
+  const initialValues = {
+    projectName: "asd",
+    term: true,
+    mintAmount: 1,
+    description: "afwef",
+  };
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
@@ -40,24 +45,12 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
 
     setTimeout(() => {
       setLoading(false);
-      msg.error({
-        content: "Error: System Error!",
-        className: "custom-class",
-        style: {
-          marginTop: "80vh",
-        },
-      });
+      toast.error();
     }, 15000);
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    msg.warn({
-      content: "Warn: Check your form and try again.",
-      className: "custom-class",
-      style: {
-        marginTop: "80vh",
-      },
-    });
+    toast.warn();
   };
 
   const getImage = async (body: { description: string }) => {
@@ -134,12 +127,11 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
         </Checkbox>
       </Form.Item>
 
-      <Form.Item className="absolute bottom-0 m-0">
+      <Form.Item className="absolute bottom-0">
         <ButtonComponent
-          text={"Gen My NFT!"}
+          text={"Gen My NFT"}
           htmlType="submit"
           loading={loading}
-          className="w-full"
           type="primary"
         />
       </Form.Item>

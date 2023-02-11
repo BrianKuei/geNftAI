@@ -1,5 +1,7 @@
 import React from "react";
 import ButtonComponent from "../component/Button";
+import useTonKeeper from "../hooks/useTonKeeper";
+import toast from "../utils/toast";
 
 interface IConfirm {
   onChange?(props: any): void;
@@ -7,15 +9,32 @@ interface IConfirm {
 
 const Confirm = ({ onChange }: IConfirm) => {
   const handleOnClick = () => {
-    onChange && onChange(true);
+    useTonKeeper({
+      amount: 100,
+      fallbackFunc: toast.error("APP not installed!"),
+    });
+
+    // TODO:
+    // onChange && onChange(true);
+  };
+
+  const handleOnReset = () => {
+    onChange && onChange({ isBack: true });
   };
 
   return (
-    <>
-      Confirm
-      <br />
-      <ButtonComponent text="Get Started" onClick={handleOnClick} />
-    </>
+    <div className="h-full">
+      <img src="https://fakeimg.pl/300/" alt="img" className="w-full" />
+
+      <div className="absolute bottom-[3vh] space-x-2">
+        <ButtonComponent text="Reset" onClick={handleOnReset} />
+        <ButtonComponent
+          text="Confirm"
+          type="primary"
+          onClick={handleOnClick}
+        />
+      </div>
+    </div>
   );
 };
 

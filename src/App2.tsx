@@ -9,12 +9,13 @@ import Confirm from "./partial/Confirm";
 import Result from "./partial/Result";
 
 function App() {
-  const [steps, setSteps] = useState(0);
+  const [steps, setSteps] = useState(3);
 
   const handleContentOnChange = ({ props, step }: any) => {
-    console.log("props", props);
-    const lastStep = stepConfig.length - 1;
+    /** handle Confirm page on reset */
+    if (props?.isBack) return setSteps((prev) => prev - 1);
 
+    const lastStep = stepConfig.length - 1;
     if (step !== lastStep) setSteps(step + 1);
   };
 
@@ -25,6 +26,7 @@ function App() {
   const stepConfig = [
     {
       key: "landing",
+      title: "geNftAI",
       component: (
         <Landing
           onChange={(props) => handleContentOnChange({ props, step: 0 })}
@@ -33,6 +35,7 @@ function App() {
     },
     {
       key: "form",
+      title: "Input Information",
       component: (
         <FormComponent
           onChange={(props) => handleContentOnChange({ props, step: 1 })}
@@ -41,6 +44,7 @@ function App() {
     },
     {
       key: "confirm",
+      title: "Confirm",
       component: (
         <Confirm
           onChange={(props) => handleContentOnChange({ props, step: 2 })}
@@ -49,6 +53,7 @@ function App() {
     },
     {
       key: "result",
+      title: "GENFTAPI",
       component: (
         <Result
           onChange={(props) => handleContentOnChange({ props, step: 3 })}
@@ -57,9 +62,14 @@ function App() {
     },
   ];
 
+  const pageTitle = stepConfig[steps]?.title;
   const Element = stepConfig[steps]?.component || <></>;
 
-  return <Layout onBack={handleOnBack}>{Element}</Layout>;
+  return (
+    <Layout title={pageTitle} onBack={handleOnBack}>
+      {Element}
+    </Layout>
+  );
 }
 
 export default App;
