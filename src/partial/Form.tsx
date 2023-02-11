@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Input, InputNumber } from "antd";
 import msg from "antd/lib/message";
-import ButtonComponent from "./Button";
+import ButtonComponent from "../component/Button";
 
 interface IFFormComponent {
   onChange?(props: IFormData): void;
@@ -17,30 +17,25 @@ interface IFormData {
 const FormComponent = ({ onChange }: IFFormComponent) => {
   const initialValues = { term: true, mintAmount: 1 };
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<IFormData>(initialValues);
-
-  useEffect(() => {
-    onChange && onChange(formData);
-  }, [formData]);
 
   const onFinish = async (values: any) => {
     const { description } = values;
     setLoading(true);
 
-    const { message, url } = await getImage({ description });
+    // const { message, url } = await getImage({ description });
 
-    if (!url) {
-      setLoading(false);
-      return msg.error({
-        content: message,
-        className: "custom-class",
-        style: {
-          marginTop: "80vh",
-        },
-      });
-    }
+    // if (!url) {
+    //   setLoading(false);
+    //   return msg.error({
+    //     content: message,
+    //     className: "custom-class",
+    //     style: {
+    //       marginTop: "80vh",
+    //     },
+    //   });
+    // }
 
-    setFormData(values);
+    onChange && onChange(values);
     setLoading(false);
 
     setTimeout(() => {
