@@ -4,29 +4,22 @@ import { CloseOutlined } from "@ant-design/icons";
 
 interface IPageHeader {
   title?: string;
-  onClose?(): void;
   onBack?(): void;
 }
-const PageHeaderComponent = ({
-  title = "geNftAI",
-  onClose,
-  onBack,
-}: IPageHeader) => {
+const PageHeaderComponent = ({ title = "geNftAI", onBack }: IPageHeader) => {
+  const isBack = !!onBack;
   const handleOnBack = () => {
     onBack && onBack();
   };
 
-  const handleOnClose = () => {
-    onClose && onClose();
-  };
-
   return (
-    <PageHeader
-      ghost={false}
-      onBack={handleOnBack}
-      title={title}
-      extra={<CloseOutlined onClick={handleOnClose} />}
-    ></PageHeader>
+    <>
+      {isBack ? (
+        <PageHeader ghost={false} onBack={handleOnBack} title={title} />
+      ) : (
+        <PageHeader ghost={false} title={title} />
+      )}
+    </>
   );
 };
 

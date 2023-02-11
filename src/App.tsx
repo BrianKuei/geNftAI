@@ -74,9 +74,15 @@ function App() {
   const Element = stepConfig[steps]?.component || <></>;
 
   return (
-    <Layout title={pageTitle} onBack={handleOnBack}>
-      {Element}
-    </Layout>
+    <>
+      {!!steps ? (
+        <Layout title={pageTitle} onBack={handleOnBack}>
+          {Element}
+        </Layout>
+      ) : (
+        <Layout title={pageTitle}>{Element}</Layout>
+      )}
+    </>
   );
 }
 
