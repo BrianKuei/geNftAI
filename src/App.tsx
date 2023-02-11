@@ -1,16 +1,11 @@
 import TonWeb from 'tonweb'; // should be on top
-import './App.css';
-import { TonConnectButton } from '@tonconnect/ui-react';
-import { useTonConnect } from './hooks/useTonConnect';
-import { useCounterContract } from './hooks/useCounterContract';
 import '@twa-dev/sdk';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { TonConnectButton } from '@tonconnect/ui-react';
 import { useDeployer } from './hooks/useDeployer';
+import './App.css';
 
 function App() {
-  const [init, setInit] = useState(false);
-  const { connected } = useTonConnect();
-  const { value, address, sendIncrement } = useCounterContract();
   const { deployNftCollection, deployNftItem, getInfo, getNextId } = useDeployer();
 
   return (
@@ -18,27 +13,6 @@ function App() {
 
       <div className='Container'>
         <TonConnectButton />
-
-        <div className='Card'>
-          <b>Counter Address</b>
-          <div className='Hint'>{ address?.slice(0, 30) + '...' }</div>
-        </div>
-
-        <div className='Card'>
-          <b>Counter Value</b>
-          <div>{ value ?? 'Loading...' }</div>
-
-        </div>
-
-        <a
-          className={ `Button ${connected ? 'Active' : 'Disabled'}` }
-          onClick={ async () => {
-            await sendIncrement();
-          } }
-        >
-          Increment
-        </a>
-
         <a
           className={ `Button ` }
           onClick={ async () => {

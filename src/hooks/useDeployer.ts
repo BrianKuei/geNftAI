@@ -1,48 +1,15 @@
 import TonWeb from 'tonweb'; // should be on top
-import { useEffect, useState } from 'react';
-import { useTonClient } from './useTonClient';
-import { useAsyncInitialize } from './useAsyncInitialize';
-import { useTonConnect } from './useTonConnect';
-import { Address, OpenedContract } from 'ton-core';
+import { useState } from 'react';
+import { Address } from 'ton-core';
 
 export function useDeployer() {
-    const { NftCollection, NftItem, NftMarketplace, NftSale } = TonWeb.token.nft;
-    const client = useTonClient();
+    const { NftCollection, NftItem } = TonWeb.token.nft;
     const [provider, setProvider] = useState<any>();
     const [nftCollection, setNftCollection] = useState<any>();
     const [nftCollectionAddress, setNftCollectionAddress] = useState<any>();
     const [walletAddress, setWalletAddress] = useState<Address | undefined>();
-    const { sender } = useTonConnect();
 
-    // const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', { apiKey: '' }));
-    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', { apiKey: '' }));
-
-    const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
-
-    const counterContract = useAsyncInitialize(async () => {
-        // @ts-ignore
-        if (!window.tonProtocolVersion || window.tonProtocolVersion < 1) {
-            alert('Please update your TON Wallet Extension');
-            return;
-        }
-        // @ts-ignore   
-        const providerNew = window.ton;
-        setProvider(providerNew);
-        const accounts = await providerNew.send('ton_requestWallets');
-        const walletAddressNew = new TonWeb.utils.Address(accounts[0].address);
-        // @ts-ignore
-        setWalletAddress(walletAddressNew);
-        console.log('wallet address=', walletAddressNew.toString(true, true, true));
-    }, [provider]);
-
-    useEffect(() => {
-        async function getValue() {
-            if (!counterContract) return;
-            await sleep(5000); // sleep 5 seconds and poll value again
-
-        }
-        getValue();
-    }, [counterContract]);
+    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', { apiKey: 'bc7cdcdd65e2b75468ffbd4635583f83ded329793ae1ff0e49693eaf8720545c' }));
 
     async function getInfo(num: number): Promise<number> {
         const data = await nftCollection.getCollectionData();
@@ -86,7 +53,7 @@ export function useDeployer() {
                 // @ts-ignore
                 royaltyAddress: walletAddress,
                 collectionContentUri: 'https://raw.githubusercontent.com/ton-blockchain/token-contract/main/nft/web-example/my_collection.json',
-                nftItemContentBaseUri: 'https://raw.githubusercontent.com/ton-blockchain/token-contract/main/nft/web-example/',
+                nftItemContentBaseUri: 'https://raw.githubusercontent.com/ton-foundation/token-contract/main/nft/web-example/my_nft.json',
                 nftItemCodeHex: NftItem.codeHex
             });
 
