@@ -4,6 +4,7 @@ import App from "./App";
 import "./index.css";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import WebSite from "./component/WebSite";
 
 // this manifest is used temporarily for development purposes
 const manifestUrl = 'https://osmanthustonx.github.io/geNftAI/tonconnect-manifest.json';
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: "/geNftAI",
     element: <App />,
+  },
+  {
+    path: "/geNftAI/web",
+    element: <WebSite />,
   },
 ]);
 
