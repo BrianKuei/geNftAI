@@ -6,8 +6,8 @@ import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // this manifest is used temporarily for development purposes
-const manifestUrl =
-  "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json";
+const manifestUrl = 'https://osmanthustonx.github.io/geNftAI/tonconnect-manifest.json';
+
 
 const router = createBrowserRouter([
   {
