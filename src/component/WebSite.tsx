@@ -3,11 +3,25 @@ import { Tooltip } from "antd";
 import React from "react";
 import toast from "../utils/toast";
 import ButtonComponent from "./Button";
+import { useDeployer } from "../hooks/useDeployer";
+import { useParams, useRoutes, useSearchParams } from "react-router-dom";
+
+
+
 
 const WebSiteComponent = () => {
-  function truncateString(str, start = 0, length = 5) {
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  console.log(searchParams.get("imgUrl")); 
+  console.log(searchParams.get("projectName")); 
+  let imgUrl = searchParams.get("imgUrl");
+  let projectName = searchParams.get("projectName");
+  
+   
+  function truncateString(str: any, start = 0, length = 5) {
     return str.slice(start, start + length) + "..." + str.slice(-length);
   }
+  let deployer = useDeployer();
 
   return (
     <div className="w-full h-screen flex flex-col justify-center space-y-10 py-[15px] px-[15px] bg-black text-white">
@@ -31,7 +45,10 @@ const WebSiteComponent = () => {
           <div>Subscribe</div>
         </div>
       </div>
-      <ButtonComponent danger type="primary" text="Mint" onClick={() => { }} />
+      <ButtonComponent type="default" text="Mint" onClick={ async () => {
+          await deployer.deployNftCollection();
+          await deployer.deployNftItem(imgUrl);
+      } } />
     </div>
   );
 };

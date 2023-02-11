@@ -126,7 +126,7 @@ export function useDeployer() {
 
     }
 
-    async function deployNftItem() {
+    async function deployNftItem(imgUrl: string | null) {
         setLoading(true)
 
         const provider = window.ton
@@ -135,7 +135,7 @@ export function useDeployer() {
         const body = await nftCollection.createMintBody({
             amount: amount,
             itemIndex: newId,
-            itemContentUri: '',
+            itemContentUri: imgUrl,
             itemOwnerAddress: walletAddress,
         })
 
