@@ -1,40 +1,75 @@
-import React from 'react';
-import '@twa-dev/sdk';
-import { TonConnectButton } from '@tonconnect/ui-react';
-import { useDeployer } from './hooks/useDeployer';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import "@twa-dev/sdk";
+
+import FormComponent from "./partial/Form";
+import Layout from "./component/Layout";
+import Landing from "./partial/Landing";
+import Confirm from "./partial/Confirm";
+import Result from "./partial/Result";
 
 function App() {
-  const { deployNftCollection, deployNftItem, getInfo, getNextId } = useDeployer();
+  const [steps, setSteps] = useState(0);
+
+  const handleContentOnChange = ({ props, step }: any) => {
+    /** handle Confirm page on reset */
+    if (props?.isBack) return setSteps((prev) => prev - 1);
+
+    const lastStep = stepConfig.length - 1;
+    if (step !== lastStep) setSteps(step + 1);
+  };
+
+  const handleOnBack = () => {
+    if (!!steps) setSteps((prev) => prev - 1);
+  };
+
+  const stepConfig = [
+    {
+      key: "landing",
+      title: "geNftAI",
+      component: (
+        <Landing
+          onChange={(props) => handleContentOnChange({ props, step: 0 })}
+        />
+      ),
+    },
+    {
+      key: "form",
+      title: "Input Information",
+      component: (
+        <FormComponent
+          onChange={(props) => handleContentOnChange({ props, step: 1 })}
+        />
+      ),
+    },
+    {
+      key: "confirm",
+      title: "Confirm",
+      component: (
+        <Confirm
+          onChange={(props) => handleContentOnChange({ props, step: 2 })}
+        />
+      ),
+    },
+    {
+      key: "result",
+      title: "GENFTAPI",
+      component: (
+        <Result
+          onChange={(props) => handleContentOnChange({ props, step: 3 })}
+        />
+      ),
+    },
+  ];
+
+  const pageTitle = stepConfig[steps]?.title;
+  const Element = stepConfig[steps]?.component || <></>;
 
   return (
-    <div className='App'>
-
-      <div className='Container'>
-        <TonConnectButton />
-        <a
-          className={ `Button ` }
-          onClick={ async () => {
-            await deployNftCollection();
-            
-          } }
-        >
-          createCollectionButton
-        </a>
-
-        <a
-          className={ `Button ` }
-          onClick={ async () => {
-            await deployNftItem();
-          } }
-        >
-          createNftButton
-        </a>
-
-        <p>叱血狂族卍S傲龍聯盟</p>
-      </div>
-    </div>
+    <Layout title={pageTitle} onBack={handleOnBack}>
+      {Element}
+    </Layout>
   );
-};
+}
 
 export default App;

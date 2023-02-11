@@ -1,7 +1,5 @@
 import React from "react";
 import ButtonComponent from "../component/Button";
-import useTonKeeper from "../hooks/useTonKeeper";
-import toast from "../utils/toast";
 
 interface IConfirm {
   onChange?(props: any): void;
@@ -9,14 +7,8 @@ interface IConfirm {
 
 const Confirm = ({ onChange }: IConfirm) => {
   const handleOnClick = () => {
-    useTonKeeper({
-      amount: 100,
-      fallbackFunc: toast.error("APP not installed!"),
-    });
-
-    // TODO:
-    // useDeployer to deploy the NFT project and get the result link
-    // onChange && onChange(true);
+    window.open(`ton://transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000`, '_blank');
+    onChange && onChange(true);
   };
 
   const handleOnReset = () => {
