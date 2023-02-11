@@ -17,7 +17,6 @@ const ButtonComponent = ({
 }: IButtonComponent) => {
   return (
     <Button
-      className={"p-4 bg-[#1890ff]" + className}
       loading={loading}
       disabled={disabled}
       type={type}

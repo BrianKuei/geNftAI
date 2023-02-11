@@ -8,9 +8,11 @@ interface IConfirm {
 }
 
 const Confirm = ({ projectInfo, onChange }: IConfirm) => {
-  console.log("projectInfo", projectInfo);
   const handleOnClick = () => {
-    window.open(`ton://transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000`, '_blank');
+    window.open(
+      `ton://transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000`,
+      "_blank"
+    );
     onChange && onChange(true);
   };
 
@@ -28,7 +30,7 @@ const Confirm = ({ projectInfo, onChange }: IConfirm) => {
         <ButtonComponent text="Reset" onClick={handleOnReset} />
         <ButtonComponent
           text="Confirm"
-          type="primary"
+          style={{ backgroundColor: "#1890ff", color: "#ffffff" }}
           onClick={handleOnClick}
         />
       </div>

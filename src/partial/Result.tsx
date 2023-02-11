@@ -42,7 +42,11 @@ const Confirm = ({ projectInfo, onChange }: IConfirm) => {
 
       <div className="absolute bottom-[3vh] space-x-2">
         <ButtonComponent text="Open in Browser" onClick={handleOpenBrowser} />
-        <ButtonComponent text="Share" type="primary" onClick={handleOnClick} />
+        <ButtonComponent
+          text="Share"
+          style={{ backgroundColor: "#1890ff", color: "#ffffff" }}
+          onClick={handleOnClick}
+        />
       </div>
     </div>
   );

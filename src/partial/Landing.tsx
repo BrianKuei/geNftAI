@@ -26,7 +26,7 @@ const Landing = ({ onChange }: ILanding) => {
       <div className="absolute bottom-[3vh]">
         <ButtonComponent
           text="Get Started"
-          type="primary"
+          style={{ backgroundColor: "#1890ff", color: "#ffffff" }}
           onClick={handleOnClick}
         />
       </div>

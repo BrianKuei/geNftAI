@@ -15,10 +15,6 @@ function App() {
     imgUrl: "https://reurl.cc/WDa5VZ",
   });
 
-  useEffect(() => {
-    console.log("projectInfo === ", projectInfo);
-  }, [projectInfo]);
-
   const handleContentOnChange = ({ props, step }: any) => {
     setProjectInfo((prev) => ({ ...prev, ...props }));
 

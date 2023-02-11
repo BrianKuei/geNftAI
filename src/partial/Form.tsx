@@ -119,7 +119,7 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
           text={"Gen My NFT"}
           htmlType="submit"
           loading={loading}
-          type="primary"
+          style={{ backgroundColor: "#1890ff", color: "#ffffff" }}
         />
       </Form.Item>
     </Form>
