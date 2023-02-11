@@ -1,5 +1,5 @@
-import './App.css';
-import { TonConnectButton } from '@tonconnect/ui-react';
+import "./App.css";
+import { TonConnectButton } from "@tonconnect/ui-react";
 
 function App() {
   return (
@@ -9,4 +9,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
