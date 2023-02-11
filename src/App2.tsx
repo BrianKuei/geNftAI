@@ -18,9 +18,9 @@ function App() {
   };
 
   return (
-    <div className="w-full bg-[#f3f3f3] h-screen border">
+    <Layout>
       <FormComponent onChange={handleContentOnChange} />
-    </div>
+    </Layout>
   );
 }
 
