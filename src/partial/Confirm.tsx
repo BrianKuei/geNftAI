@@ -15,6 +15,7 @@ const Confirm = ({ onChange }: IConfirm) => {
     });
 
     // TODO:
+    // useDeployer to deploy the NFT project and get the result link
     // onChange && onChange(true);
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import "@twa-dev/sdk";
 
@@ -9,7 +9,7 @@ import Confirm from "./partial/Confirm";
 import Result from "./partial/Result";
 
 function App() {
-  const [steps, setSteps] = useState(3);
+  const [steps, setSteps] = useState(0);
 
   const handleContentOnChange = ({ props, step }: any) => {
     /** handle Confirm page on reset */
