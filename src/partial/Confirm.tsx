@@ -18,12 +18,23 @@ const Confirm = ({ onChange }: IConfirm) => {
     // onChange && onChange(true);
   };
 
+  const handleOnReset = () => {
+    onChange && onChange({ isBack: true });
+  };
+
   return (
-    <>
-      Confirm
-      <br />
-      <ButtonComponent text="Get Started" onClick={handleOnClick} />
-    </>
+    <div className="h-full">
+      <img src="https://fakeimg.pl/300/" alt="img" className="w-full" />
+
+      <div className="absolute bottom-[3vh] space-x-2">
+        <ButtonComponent text="Reset" onClick={handleOnReset} />
+        <ButtonComponent
+          text="Confirm"
+          type="primary"
+          onClick={handleOnClick}
+        />
+      </div>
+    </div>
   );
 };
 

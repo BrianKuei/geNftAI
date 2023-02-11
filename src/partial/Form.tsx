@@ -15,7 +15,12 @@ interface IFormData {
 }
 
 const FormComponent = ({ onChange }: IFFormComponent) => {
-  const initialValues = { term: true, mintAmount: 1 };
+  const initialValues = {
+    projectName: "asd",
+    term: true,
+    mintAmount: 1,
+    description: "afwef",
+  };
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
@@ -122,12 +127,11 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
         </Checkbox>
       </Form.Item>
 
-      <Form.Item className="absolute bottom-0 m-0">
+      <Form.Item className="absolute bottom-0">
         <ButtonComponent
-          text={"Gen My NFT!"}
+          text={"Gen My NFT"}
           htmlType="submit"
           loading={loading}
-          className="w-full"
           type="primary"
         />
       </Form.Item>
