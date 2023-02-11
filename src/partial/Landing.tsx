@@ -12,12 +12,14 @@ const Landing = ({ onChange }: ILanding) => {
 
   return (
     <div className="h-full space-y-2">
-      <img src="https://fakeimg.pl/300x120/" alt="img" className="w-full" />
+      <iframe src="https://reurl.cc/WDa5VZ/" className="w-full">
+        你的瀏覽器不支援 iframe
+      </iframe>
 
-      <div>
-        Lorem Ipsum has been the industry's standard dummy text ever since the
-        1500s, when an unknown printer took a galley of type and scrambled it to
-        make a type.
+      <div className="text-2xl font-bold">No technology NFT release!</div>
+      <div className="text-lg font-bold">
+        To solve this problem by providing a simple and accessible way for
+        people to create and mint their own NFTs.
       </div>
 
       <div className="absolute bottom-[3vh]">
