@@ -42,7 +42,6 @@ const WebSiteComponent = () => {
         </div>
       </div>
       <ButtonComponent type="default" text="Mint" onClick={async () => {
-        await deployer.deployNftCollection(jsonUrl);
         await deployer.deployNftItem(jsonUrl);
       }} />
     </div>

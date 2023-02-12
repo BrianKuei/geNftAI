@@ -86,7 +86,7 @@ export function useDeployer() {
             nftItemCodeHex: NftItem.codeHex, // format of the nft item
         });
         const nftCollectionAddr = await nftCollection.getAddress();
-
+        setNftCollection(nftCollection);
         // check if the collection already exists
         let addresses = new Set();
         walletHistory.forEach(el => {
@@ -96,17 +96,17 @@ export function useDeployer() {
             } catch (e) { }
         });
 
-        if (addresses.has(nftCollectionAddr.toString(true, true, true))) {
-
+        // if (addresses.has(nftCollectionAddr.toString(true, true, true))) {
             setNftCollection(nftCollection);
+
             setCollectionAddress(nftCollectionAddr);
             const history = await tonweb.getTransactions(nftCollectionAddr);
             setCollectionHistory(history);
 
             //await getInfo(nftCollection)
 
-        }
-            nftCollectionAddr.toString(true, true, true);
+//        }
+        console.log("Deploy--->", nftCollectionAddr.toString(true, true, true));
 
         const stateInit = (await nftCollection.createStateInit()).stateInit;
         const stateInitBoc = await stateInit.toBoc(false);
@@ -123,9 +123,7 @@ export function useDeployer() {
                 }],
         ).then(async res => {
             // we get TRUE or FALSE
-
             if (res) {
-
                 setCollectionAddress(nftCollectionAddr);
                 setNftCollection(nftCollection);
                 const history = await tonweb.getTransactions(nftCollectionAddr);
@@ -143,7 +141,21 @@ export function useDeployer() {
         //@ts-ignore
         const provider = window.ton;
         const amount = TonWeb.utils.toNano(0.05.toString());
-        const newId = await getNextId();
+
+        const nftCollection = new NftCollection(tonweb.provider, {
+            ownerAddress: walletAddress, // owner of the collection
+            royalty: 1 / 100, // royalty in %
+            royaltyAddress: walletAddress, // address to receive the royalties
+            collectionContentUri: jsonUrl, // url to the collection content
+            nftItemContentBaseUri: jsonUrl, // url to the nft item content
+            nftItemCodeHex: NftItem.codeHex, // format of the nft item
+        });
+
+        console.log("Mint ---> nftCollection", nftCollection)
+        console.log("jsonUrl~~~", jsonUrl)
+
+        const nftCollectionAddr = await nftCollection.getAddress();
+        const newId = (await nftCollection.getCollectionData()).nextItemIndex;
         const body = await nftCollection.createMintBody({
             amount: amount,
             itemIndex: newId,
@@ -153,9 +165,11 @@ export function useDeployer() {
 
         const bodyBoc = await body.toBoc(false);
         const bodyBase64 = TonWeb.utils.bytesToBase64(bodyBoc);
-
+        console.log("nftCollectionAddr~~", nftCollectionAddr)
+        
         let collectionNftData = new Set();
-        collectionHistory.forEach(el => {
+
+        (await tonweb.getTransactions(nftCollectionAddr)).forEach(el => {
             try {
                 //@ts-ignore
                 collectionNftData.add(el.in_msg.msg_data.body);
@@ -164,21 +178,22 @@ export function useDeployer() {
 
         // check if the NFT exists in the collection
         if (collectionNftData.has(bodyBase64)) {
-
             return;
         }
 
+        console.log("Collection~~~", nftCollectionAddr.toString(true, true, true))
+        console.log("collectionNftData~~~", collectionNftData,amount.toString())
+        
         provider.send(
             'ton_sendTransaction',
             [
                 {
-                    to: collectionAddress.toString(true, true, true),
+                    to: nftCollectionAddr.toString(true, true, true),
                     value: amount.toString(),
                     data: bodyBase64,
                     dataType: 'boc',
                 }],
         ).then(res => {
-
             if (res) {
             } else {
             }

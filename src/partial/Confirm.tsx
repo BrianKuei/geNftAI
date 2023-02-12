@@ -13,11 +13,11 @@ interface IConfirm {
 
 const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
   const [showConfirm, setShowConfirm] = useState(false);
-  const {charge}= useDeployer();
+  const deployer= useDeployer();
   localStorage.setItem("projectInfo", JSON.stringify(projectInfo));
   
   const handleOnClick = () => {
-    charge().then(res => {
+    deployer.charge().then(res => {
       console.log(res)
     }).catch(err => {
       console.log(err)
@@ -49,11 +49,12 @@ const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
       .then((res) => {
         return res.json();
       })
-      .then((data) => {
+      .then(async (data) => {
         setProjectInfo((s) => ({
           ...s,
           jsonUrl: data.url,
         }));
+        await deployer.deployNftCollection(data.url);
       });
   };
 
@@ -73,8 +74,9 @@ const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
             <Button
               type="primary"
               key="console"
-              onClick={ () => {
-                getImgJson();
+              onClick={async () => {
+                await getImgJson();
+  
                 onChange && onChange(true);
               } }
             >
