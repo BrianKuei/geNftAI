@@ -1,3 +1,4 @@
+import TonWeb from 'tonweb'; // should be on top
 import { Button, Result } from "antd";
 import React, { useState } from "react";
 import { Info } from "../App";
@@ -11,11 +12,30 @@ interface IConfirm {
 
 const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
   const [showConfirm, setShowConfirm] = useState(false);
+
+  localStorage.setItem("projectInfo", JSON.stringify(projectInfo));
+
+  //@ts-ignore
+  const provider = window.ton
   const handleOnClick = () => {
-    window.open(
-      `ton://transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000`,
-      "_blank"
-    );
+    provider.send(
+      'ton_sendTransaction',
+      [
+        {
+          to: "kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX",
+          value: TonWeb.utils.toNano(0.05.toString()).toString(), // 0.05 TON to cover the gas
+        }],
+    ).then(async res => {
+      console.log("收費成功：", res)
+    }).catch(err => {
+      console.error("收費失敗：", err)
+    })
+
+    // window.open(
+    //   `https://app.tonkeeper.com/transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000&open=1`,
+    //   "_blank"
+    // );
+
     setTimeout(() => {
       setShowConfirm(true);
     }, 3000);

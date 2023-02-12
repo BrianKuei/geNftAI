@@ -10,11 +10,13 @@ export default function useConnect(window: Window & typeof globalThis, tonweb: T
     setLoading(true)
 
     try {
+      //@ts-ignore
       if (window.tonProtocolVersion || window.tonProtocolVersion > 1) {
+        //@ts-ignore
         if (window.ton.isTonWallet) {
           console.log('TON Wallet Extension found!')
         }
-
+        //@ts-ignore
         const provider = window.ton
         const accounts = await provider.send('ton_requestWallets')
 

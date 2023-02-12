@@ -9,9 +9,7 @@ export function useDeployer() {
     const { NftCollection, NftItem } = TonWeb.token.nft;
     const [nftCollection, setNftCollection] = useState<any>();
     const [collectionAddress, setCollectionAddress] = useState<Address>();
-    const [nftCollectionAddress, setNftCollectionAddress] = useState<Address>();
     const [collectionHistory, setCollectionHistory] = useState<Address[]>();
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         connectWallet();
@@ -51,8 +49,8 @@ export function useDeployer() {
     }
 
     async function deployNftCollection() {
-        setLoading(true)
 
+        //@ts-ignore
         const provider = window.ton
 
         const nftCollection = new NftCollection(tonweb.provider, {
@@ -70,6 +68,7 @@ export function useDeployer() {
         let addresses = new Set()
         walletHistory.forEach(el => {
             try {
+                //@ts-ignore
                 addresses.add(el.out_msgs[0].destination)
             } catch (e) { }
         })
@@ -85,7 +84,6 @@ export function useDeployer() {
 
             //await getInfo(nftCollection)
 
-            setLoading(false)
         }
         console.log('Collection address (changes with provided data):',
             nftCollectionAddr.toString(true, true, true))
@@ -118,17 +116,14 @@ export function useDeployer() {
                 console.log('Wallet didn\'t approved minting transaction')
             }
 
-            setLoading(false)
         }).catch(err => {
             console.error(err)
-            setLoading(false)
         })
 
     }
 
     async function deployNftItem(jsonUrl: string | null) {
-        setLoading(true)
-
+        //@ts-ignore
         const provider = window.ton
         const amount = TonWeb.utils.toNano(0.05.toString())
         const newId = await getNextId();
@@ -145,6 +140,7 @@ export function useDeployer() {
         let collectionNftData = new Set()
         collectionHistory.forEach(el => {
             try {
+                //@ts-ignore
                 collectionNftData.add(el.in_msg.msg_data.body)
             } catch (e) { }
         })
@@ -152,7 +148,7 @@ export function useDeployer() {
         // check if the NFT exists in the collection
         if (collectionNftData.has(bodyBase64)) {
             console.log('NFT already deployed!')
-            setLoading(false)
+
             return
         }
 
@@ -169,15 +165,12 @@ export function useDeployer() {
 
             if (res) {
                 console.log('Transaction successful')
-                setLoading(false)
             } else {
                 console.log('Wallet didn\'t approved minting transaction')
             }
 
-            setLoading(false)
         }).catch(err => {
             console.log(err)
-            setLoading(false)
         })
     }
 
