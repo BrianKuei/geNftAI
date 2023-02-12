@@ -33,7 +33,6 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
 
     setTimeout(() => {
       setLoading(false);
-      toast.error();
     }, 15000);
   };
 

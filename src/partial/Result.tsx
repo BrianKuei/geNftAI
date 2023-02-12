@@ -17,7 +17,7 @@ const Confirm = ({ projectInfo, onChange }: IConfirm) => {
 
   const handleOpenBrowser = () => {
     navigate(
-      `/geNftAI/web?imgUrl=${projectInfo?.imgUrl}&projectName=${projectInfo?.projectName}`
+      `/geNftAI/web?imgUrl=${projectInfo?.imgUrl}&projectName=${projectInfo?.projectName}&jsonUrl=${projectInfo?.jsonUrl}`
     );
   };
 

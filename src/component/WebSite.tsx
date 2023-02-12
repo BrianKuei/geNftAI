@@ -14,8 +14,10 @@ const WebSiteComponent = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   console.log(searchParams.get("imgUrl")); 
   console.log(searchParams.get("projectName")); 
+  console.log(searchParams.get("jsonUrl")); 
   let imgUrl = searchParams.get("imgUrl");
   let projectName = searchParams.get("projectName");
+  let jsonUrl = searchParams.get("jsonUrl");
   
    
   function truncateString(str: any, start = 0, length = 5) {
@@ -47,7 +49,7 @@ const WebSiteComponent = () => {
       </div>
       <ButtonComponent type="default" text="Mint" onClick={ async () => {
           await deployer.deployNftCollection();
-          await deployer.deployNftItem(imgUrl);
+          await deployer.deployNftItem(jsonUrl);
       } } />
     </div>
   );
