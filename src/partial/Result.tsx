@@ -1,45 +1,36 @@
 import React from "react";
 import ButtonComponent from "../component/Button";
 import { useNavigate } from "react-router-dom";
+import toast from "../utils/toast";
 
 interface IConfirm {
-  // TODO:
   projectInfo?: any;
   onChange?(props: any): void;
 }
 
 const Confirm = ({ projectInfo, onChange }: IConfirm) => {
+  const link = `/geNftAI/web?imgUrl=${projectInfo?.imgUrl}&projectName=${projectInfo?.projectName}&jsonUrl=${projectInfo?.jsonUrl}`
   const navigate = useNavigate();
   const handleOnClick = () => {
-    // TODO:
-    // share link to TG channel
+    toast.success('Copy Link');
   };
 
   const handleOpenBrowser = () => {
     navigate(
-      `/geNftAI/web?imgUrl=${projectInfo?.imgUrl}&projectName=${projectInfo?.projectName}&jsonUrl=${projectInfo?.jsonUrl}`
+      link
     );
   };
 
   return (
-    <div className="w-full h-full space-y-2 flex flex-col">
-      <div className="h-full">
-        <div className="w-full space-y-2">
-          <div className="text-bold">Preview</div>
-          <iframe
-            src={projectInfo?.resultLink || "https://www.google.com/"}
-            className="w-full"
-          >
-            你的瀏覽器不支援 iframe
-          </iframe>
-        </div>
-
-        <div className="w-full space-y-2">
-          <div className="text-bold">Link</div>
-          <p className="text-gray-300">
-            {projectInfo?.resultLink || "https://www.google.com/"}
-          </p>
-        </div>
+    <div className="w-full h-full flex flex-col">
+      <div className="h-screen">
+        <div className="text-bold">Preview</div>
+        <iframe
+          src={link || "https://www.google.com/"}
+          className="w-full h-[450px]"
+        >
+          你的瀏覽器不支援 iframe
+        </iframe>
       </div>
 
       <div className="flex w-full space-x-2">

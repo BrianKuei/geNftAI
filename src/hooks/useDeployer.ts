@@ -19,14 +19,10 @@ export function useDeployer() {
         const data = await nftCollection.getCollectionData();
         // @ts-ignore
         data.ownerAddress = data.ownerAddress.toString(true, true, true);
-        console.log(data);
         const royaltyParams = await nftCollection.getRoyaltyParams();
         // @ts-ignore
         royaltyParams.royaltyAddress = royaltyParams.royaltyAddress.toString(true, true, true);
-        console.log('royaltyParams: ', royaltyParams);
-        console.log('getInfo: 準備拿', num);
         const nftItemAddress0 = (await nftCollection.getNftItemAddressByIndex(num)).toString(true, true, true);
-        console.log('nftItemAddress0: ', nftItemAddress0);
 
         const nftItem = new NftItem(tonweb.provider, { address: nftItemAddress0 });
         const nftData = await nftCollection.methods.getNftItemContent(nftItem);
@@ -34,16 +30,11 @@ export function useDeployer() {
         nftData.collectionAddress = nftData.collectionAddress.toString(true, true, true);
         // @ts-ignore
         nftData.ownerAddress = nftData.ownerAddress?.toString(true, true, true);
-        console.log("data???", data);
-        console.log("nftData???", nftData);
-        console.log("nextItemIndex???", data.nextItemIndex);
         return data.nextItemIndex;
     }
 
     async function getNextId(): Promise<number> {
         const data = await nftCollection.getCollectionData();
-        console.log("data???", data);
-        console.log("nextItemIndex???", data.nextItemIndex);
         return data.nextItemIndex;
     }
 
@@ -51,7 +42,6 @@ export function useDeployer() {
         //@ts-ignore
         const provider = window.ton;
         // //@ts-ignore
-        // console.log("window.ton~~", window.ton);
         // //@ts-ignore
         // const ton = new TonWeb(window.ton);
         // // Send your transaction
@@ -72,18 +62,17 @@ export function useDeployer() {
         //         // dataType: 'text'
         //     }]
         // ).then(async res => {
-        //     console.log("收費成功：", res);
         // }).catch(err => {
         //     console.error("收費失敗：", err);
         // });
 
         window.open(
-          `https://app.tonkeeper.com/transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000&open=1`,
-          "_blank"
+            `https://app.tonkeeper.com/transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000&open=1`,
+            "_blank"
         );
     }
 
-    async function deployNftCollection() {
+    async function deployNftCollection(jsonUrl: string) {
 
         //@ts-ignore
         const provider = window.ton;
@@ -92,11 +81,10 @@ export function useDeployer() {
             ownerAddress: walletAddress, // owner of the collection
             royalty: 1 / 100, // royalty in %
             royaltyAddress: walletAddress, // address to receive the royalties
-            collectionContentUri: 'https://raw.githubusercontent.com/ton-blockchain/token-contract/main/nft/web-example/my_collection.json', // url to the collection content
-            nftItemContentBaseUri: 'https://raw.githubusercontent.com/ton-foundation/token-contract/main/nft/web-example/my_nft.json', // url to the nft item content
+            collectionContentUri: jsonUrl, // url to the collection content
+            nftItemContentBaseUri: jsonUrl, // url to the nft item content
             nftItemCodeHex: NftItem.codeHex, // format of the nft item
         });
-        console.log('Collection data:', nftCollection);
         const nftCollectionAddr = await nftCollection.getAddress();
 
         // check if the collection already exists
@@ -109,19 +97,16 @@ export function useDeployer() {
         });
 
         if (addresses.has(nftCollectionAddr.toString(true, true, true))) {
-            console.log('Collection already deployed!');
 
             setNftCollection(nftCollection);
             setCollectionAddress(nftCollectionAddr);
             const history = await tonweb.getTransactions(nftCollectionAddr);
-            console.log('Collection history [1]:', history);
             setCollectionHistory(history);
 
             //await getInfo(nftCollection)
 
         }
-        console.log('Collection address (changes with provided data):',
-            nftCollectionAddr.toString(true, true, true));
+            nftCollectionAddr.toString(true, true, true);
 
         const stateInit = (await nftCollection.createStateInit()).stateInit;
         const stateInitBoc = await stateInit.toBoc(false);
@@ -140,15 +125,12 @@ export function useDeployer() {
             // we get TRUE or FALSE
 
             if (res) {
-                console.log('Transaction successful');
 
                 setCollectionAddress(nftCollectionAddr);
                 setNftCollection(nftCollection);
                 const history = await tonweb.getTransactions(nftCollectionAddr);
-                console.log('Collection history [2]:', history);
                 setCollectionHistory(history);
             } else {
-                console.log('Wallet didn\'t approved minting transaction');
             }
 
         }).catch(err => {
@@ -182,7 +164,6 @@ export function useDeployer() {
 
         // check if the NFT exists in the collection
         if (collectionNftData.has(bodyBase64)) {
-            console.log('NFT already deployed!');
 
             return;
         }
@@ -199,13 +180,10 @@ export function useDeployer() {
         ).then(res => {
 
             if (res) {
-                console.log('Transaction successful');
             } else {
-                console.log('Wallet didn\'t approved minting transaction');
             }
 
         }).catch(err => {
-            console.log(err);
         });
     }
 
