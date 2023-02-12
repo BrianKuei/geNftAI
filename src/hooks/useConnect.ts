@@ -44,6 +44,6 @@ export default function useConnect(window: Window & typeof globalThis, tonweb: T
   return {
     walletAddress,
     walletHistory,
-    connectWallet
+    connectWallet,
   }
 }
