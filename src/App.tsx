@@ -42,7 +42,7 @@ function App() {
   const stepConfig = [
     {
       key: "landing",
-      title: "geNftAI",
+      title: "genftai",
       component: (
         <Landing
           onChange={(props) => handleContentOnChange({ props, step: 0 })}

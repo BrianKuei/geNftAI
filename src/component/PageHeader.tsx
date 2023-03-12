@@ -6,7 +6,7 @@ interface IPageHeader {
   title?: string;
   onBack?(): void;
 }
-const PageHeaderComponent = ({ title = "geNftAI", onBack }: IPageHeader) => {
+const PageHeaderComponent = ({ title = "genftai", onBack }: IPageHeader) => {
   const isBack = !!onBack;
   const handleOnBack = () => {
     onBack && onBack();

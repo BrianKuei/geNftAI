@@ -8,7 +8,7 @@ export default function useConnect(window: Window & typeof globalThis, tonweb: T
   const [walletHistory, setWalletHistory] = useState<Address[]>([]);
   const connectWallet = async () => {
     setLoading(true)
-
+    let wallet;
     try {
       //@ts-ignore
       if (window.tonProtocolVersion || window.tonProtocolVersion > 1) {
@@ -21,7 +21,8 @@ export default function useConnect(window: Window & typeof globalThis, tonweb: T
         const accounts = await provider.send('ton_requestWallets')
 
         const tonWalletAddr = new TonWeb.utils.Address(accounts[0].address)
-
+        // wallet = tonweb.wallet.create({ tonWalletAddr });
+        // wallet.methods.transfer()
         console.log('Connected accounts:',accounts)
 
         console.log('Connected wallet address:',tonWalletAddr.toString(true, true, true))
@@ -42,6 +43,7 @@ export default function useConnect(window: Window & typeof globalThis, tonweb: T
   }
 
   return {
+    // wallet,
     walletAddress,
     walletHistory,
     connectWallet,

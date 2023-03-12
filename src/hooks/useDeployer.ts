@@ -2,7 +2,7 @@ import TonWeb from 'tonweb'; // should be on top
 import { useEffect, useState } from 'react';
 import useConnect from './useConnect';
 import { Address } from 'tonweb/dist/types/utils/address';
-
+import TonConnect from '@tonconnect/sdk';
 export function useDeployer() {
     const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', { apiKey: 'bc7cdcdd65e2b75468ffbd4635583f83ded329793ae1ff0e49693eaf8720545c' }));
     const { walletAddress, walletHistory, connectWallet } = useConnect(window, tonweb);
@@ -41,7 +41,7 @@ export function useDeployer() {
     async function charge() {
         //@ts-ignore
         const provider = window.ton;
-        // //@ts-ignore
+
         // //@ts-ignore
         // const ton = new TonWeb(window.ton);
         // // Send your transaction
@@ -66,15 +66,85 @@ export function useDeployer() {
         //     console.error("收費失敗：", err);
         // });
 
-        window.open(
-            `https://app.tonkeeper.com/transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000&open=1`,
-            "_blank"
-        );
+        // window.open(
+        //     `https://app.tonkeeper.com/transfer/kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX?amount=1000&open=1`,
+        //     "_blank"
+        // );
+        try {
+            // await provider.send(
+            //     'ton_sendTransaction',
+            //     [
+            //         {
+            //             to: 'kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX',
+            //             value: '1',
+            //             data: "",
+            //             dataType: 'boc',
+            //         }],
+            // );
+            // Send your transaction
+
+            // await provider.send('ton_sendTransaction', [{
+            //     to: 'kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX',
+            //     value: '1000'
+            // }]
+            // );
+
+            // https://github.com/toncenter/ton-wallet/issues/51
+            await provider.send(
+                'ton_sendTransaction',
+                [
+                    {
+                        to: "kQBp58MUqqirN6VdsW6f_UxfLKo9xVFpEt2RCQtOT4uaylwX",
+                        value: TonWeb.utils.toNano(0.001.toString()).toString(), // 0.05 TON to cover the gas
+                        stateInit: "",
+                        dataType: 'boc',
+                    }],
+            );
+            console.log('Done!',);
+            alert("Paid!");
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+
+    async function sendTxWithTonKeeeper({ address, amount, data, stateInit }) {
+        const connector = new TonConnect();
+        const walletConnectionSource = {
+            jsBridgeKey: 'tonkeeper'
+        };
+        connector.connect(walletConnectionSource);
+        // const walletsList = await connector.getWallets(); // or use `walletsList` fetched before  
+        const transaction = {
+            validUntil: 1658253458,
+            messages: [
+                {
+                    address: address,
+                    amount: amount,
+                    payload: data,
+                    stateInit: stateInit
+                },
+            ]
+        };
+        try {
+            const result = await connector.sendTransaction(transaction);
+            // you can use signed boc to find the transaction 
+            //   const someTxData = await myAppExplorerService.getTransaction(result.boc);
+            alert('Transaction was sent successfully' + JSON.stringify(result));
+            alert('Nft Address:' + address);
+
+        } catch (e) {
+            if (e) {
+                alert('You rejected the transaction.' + JSON.stringify(e));
+            } else {
+                alert('Unknown error happened' + JSON.stringify(e));
+            }
+        }
     }
 
     async function deployNftCollection(jsonUrl: string) {
 
-        //@ts-ignore
+        //@ts-ignore\
         const provider = window.ton;
 
         const nftCollection = new NftCollection(tonweb.provider, {
@@ -85,8 +155,11 @@ export function useDeployer() {
             nftItemContentBaseUri: jsonUrl, // url to the nft item content
             nftItemCodeHex: NftItem.codeHex, // format of the nft item
         });
+
         const nftCollectionAddr = await nftCollection.getAddress();
+
         setNftCollection(nftCollection);
+
         // check if the collection already exists
         let addresses = new Set();
         walletHistory.forEach(el => {
@@ -97,50 +170,57 @@ export function useDeployer() {
         });
 
         // if (addresses.has(nftCollectionAddr.toString(true, true, true))) {
-            setNftCollection(nftCollection);
+        setNftCollection(nftCollection);
 
-            setCollectionAddress(nftCollectionAddr);
-            const history = await tonweb.getTransactions(nftCollectionAddr);
-            setCollectionHistory(history);
+        setCollectionAddress(nftCollectionAddr);
+        const history = await tonweb.getTransactions(nftCollectionAddr);
+        setCollectionHistory(history);
 
-            //await getInfo(nftCollection)
-
-//        }
+        //await getInfo(nftCollection)
+        //        }
         console.log("Deploy--->", nftCollectionAddr.toString(true, true, true));
 
         const stateInit = (await nftCollection.createStateInit()).stateInit;
         const stateInitBoc = await stateInit.toBoc(false);
         const stateInitBase64 = TonWeb.utils.bytesToBase64(stateInitBoc);
 
-        provider.send(
-            'ton_sendTransaction',
-            [
-                {
-                    to: (nftCollectionAddr).toString(true, true, true),
-                    value: TonWeb.utils.toNano(0.05.toString()).toString(), // 0.05 TON to cover the gas
-                    stateInit: stateInitBase64,
-                    dataType: 'boc',
-                }],
-        ).then(async res => {
-            // we get TRUE or FALSE
-            if (res) {
-                setCollectionAddress(nftCollectionAddr);
-                setNftCollection(nftCollection);
-                const history = await tonweb.getTransactions(nftCollectionAddr);
-                setCollectionHistory(history);
-            } else {
-            }
-
-        }).catch(err => {
+        // sendTxWithTonKeeeper({
+        //     address: nftCollectionAddr,
+        //     amount: TonWeb.utils.toNano(0.05.toString()).toString(), // 0.05 TON to cover the gas
+        //     stateInit: stateInitBase64,
+        //     data: undefined
+        // }).then(async res => {
+        //     setCollectionAddress(nftCollectionAddr);
+        //     setNftCollection(nftCollection);
+        //     const history = await tonweb.getTransactions(nftCollectionAddr);
+        //     setCollectionHistory(history);
+        // }).catch(err => {
+        //     console.error(err);
+        // });
+        try {
+            await provider.send(
+                'ton_sendTransaction',
+                [
+                    {
+                        to: (nftCollectionAddr).toString(true, true, true),
+                        value: TonWeb.utils.toNano(0.005.toString()).toString(), // 0.05 TON to cover the gas
+                        stateInit: stateInitBase64,
+                        dataType: 'boc',
+                    }],
+            );
+            setCollectionAddress(nftCollectionAddr);
+            setNftCollection(nftCollection);
+            const history = await tonweb.getTransactions(nftCollectionAddr);
+            setCollectionHistory(history);
+        } catch (err) {
             console.error(err);
-        });
-
+        }
     }
 
     async function deployNftItem(jsonUrl: string | null) {
         //@ts-ignore
         const provider = window.ton;
-        const amount = TonWeb.utils.toNano(0.05.toString());
+        const amount = TonWeb.utils.toNano(0.005.toString());
 
         const nftCollection = new NftCollection(tonweb.provider, {
             ownerAddress: walletAddress, // owner of the collection
@@ -151,8 +231,8 @@ export function useDeployer() {
             nftItemCodeHex: NftItem.codeHex, // format of the nft item
         });
 
-        console.log("Mint ---> nftCollection", nftCollection)
-        console.log("jsonUrl~~~", jsonUrl)
+        console.log("Mint ---> nftCollection", nftCollection);
+        console.log("jsonUrl~~~", jsonUrl);
 
         const nftCollectionAddr = await nftCollection.getAddress();
         const newId = (await nftCollection.getCollectionData()).nextItemIndex;
@@ -165,8 +245,8 @@ export function useDeployer() {
 
         const bodyBoc = await body.toBoc(false);
         const bodyBase64 = TonWeb.utils.bytesToBase64(bodyBoc);
-        console.log("nftCollectionAddr~~", nftCollectionAddr)
-        
+        console.log("nftCollectionAddr~~", nftCollectionAddr);
+
         let collectionNftData = new Set();
 
         (await tonweb.getTransactions(nftCollectionAddr)).forEach(el => {
@@ -181,9 +261,9 @@ export function useDeployer() {
             return;
         }
 
-        console.log("Collection~~~", nftCollectionAddr.toString(true, true, true))
-        console.log("collectionNftData~~~", collectionNftData,amount.toString())
-        
+        console.log("Collection~~~", nftCollectionAddr.toString(true, true, true));
+        console.log("collectionNftData~~~", collectionNftData, amount.toString());
+
         provider.send(
             'ton_sendTransaction',
             [

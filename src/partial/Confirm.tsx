@@ -19,8 +19,10 @@ const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
   const handleOnClick = () => {
     deployer.charge().then(res => {
       console.log(res)
+      getImgJson();
     }).catch(err => {
       console.log(err)
+
     })
 
     setTimeout(() => {
@@ -74,9 +76,7 @@ const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
             <Button
               type="primary"
               key="console"
-              onClick={async () => {
-                await getImgJson();
-  
+              onClick={async () => {  
                 onChange && onChange(true);
               } }
             >

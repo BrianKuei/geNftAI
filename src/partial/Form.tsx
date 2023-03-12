@@ -109,7 +109,7 @@ const FormComponent = ({ onChange }: IFFormComponent) => {
         rules={[{ required: true, message: "Please check the user term!" }]}
       >
         <Checkbox>
-          I accept the following terms <a href="#">geNftAI user term</a>
+          I accept the following terms <a href="#">genftai user term</a>
         </Checkbox>
       </Form.Item>
 

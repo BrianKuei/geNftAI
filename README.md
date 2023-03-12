@@ -1,1 +1,1 @@
-# geNftAI
+# genftai

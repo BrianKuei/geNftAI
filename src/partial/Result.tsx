@@ -9,7 +9,7 @@ interface IConfirm {
 }
 
 const Confirm = ({ projectInfo, onChange }: IConfirm) => {
-  const link = `/geNftAI/web?imgUrl=${projectInfo?.imgUrl}&projectName=${projectInfo?.projectName}&jsonUrl=${projectInfo?.jsonUrl}`
+  const link = `/genftai/web?imgUrl=${projectInfo?.imgUrl}&projectName=${projectInfo?.projectName}&jsonUrl=${projectInfo?.jsonUrl}`
   const navigate = useNavigate();
   const handleOnClick = () => {
     toast.success('Copy Link');
