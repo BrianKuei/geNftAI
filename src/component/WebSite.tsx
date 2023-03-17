@@ -17,7 +17,6 @@ const WebSiteComponent = () => {
     return str.slice(start, start + length) + "..." + str.slice(-length);
   }
   let deployer = useDeployer();
-
   return (
     <div className="w-full h-screen flex flex-col justify-center space-y-10 py-[15px] px-[15px] bg-black text-white">
       <div className="h-[320px] w-full flex justify-center items-center">

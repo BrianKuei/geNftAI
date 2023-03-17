@@ -5,6 +5,7 @@ import "./index.css";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import WebSite from "./component/WebSite";
+import Chatroom from "./component/Chatroom";
 
 // this manifest is used temporarily for development purposes
 const manifestUrl = 'https://osmanthustonx.github.io/genftai/tonconnect-manifest.json';
@@ -13,7 +14,7 @@ const manifestUrl = 'https://osmanthustonx.github.io/genftai/tonconnect-manifest
 const router = createBrowserRouter([
   {
     path: "/genftai",
-    element: <App />,
+    element: <Chatroom />,
   },
   {
     path: "/genftai/web",

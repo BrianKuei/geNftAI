@@ -15,9 +15,10 @@
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
     "@orbs-network/ton-access": "^2.2.2",
-    "@ton-community/func-js": "^0.5.0", 
+    "@ton-community/func-js": "^0.5.0",
     "@tonconnect/ui-react": "^0.0.14",
     "@twa-dev/sdk": "^6.4.2",
+    "@xstate/react": "^3.2.1",
     "antd": "^4.24.7",
     "gh-pages": "^5.0.0",
     "react": "^18.2.0",
@@ -26,7 +27,8 @@
     "ton": "^13.3.0",
     "ton-core": "^0.47.1",
     "tonweb": "^0.0.59",
-    "vite-plugin-node-polyfills": "^0.7.0"
+    "vite-plugin-node-polyfills": "^0.7.0",
+    "xstate": "^4.37.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

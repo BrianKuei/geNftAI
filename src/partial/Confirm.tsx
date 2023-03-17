@@ -1,5 +1,5 @@
 import { Button, Result } from "antd";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Info } from "../App";
 import ButtonComponent from "../component/Button";
 import useConnect from '../hooks/useConnect';
@@ -13,9 +13,9 @@ interface IConfirm {
 
 const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
   const [showConfirm, setShowConfirm] = useState(false);
-  const deployer= useDeployer();
+  const deployer = useDeployer();
   localStorage.setItem("projectInfo", JSON.stringify(projectInfo));
-  
+
   const handleOnClick = () => {
     deployer.charge().then(res => {
       console.log(res)
@@ -30,7 +30,7 @@ const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
     }, 3000);
   };
 
-  const getImgJson = async () => {
+  const getImgJson = () => {
     fetch("https://genftai.glitch.me/api/getjsonurl", {
       method: "POST",
       cache: "no-cache",
@@ -67,27 +67,27 @@ const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
 
   return (
     <div className="w-full h-full flex flex-col">
-      { showConfirm ? (
+      {showConfirm ? (
         <Result
           status="success"
           title="Successfully Purchased NFT"
           subTitle="Order number: 2017182818828182881 NFT configuration takes 1-5 minutes, please wait."
-          extra={ [
+          extra={[
             <Button
               type="primary"
               key="console"
-              onClick={async () => {  
+              onClick={async () => {
                 onChange && onChange(true);
-              } }
+              }}
             >
               Go Preview
             </Button>,
-          ] }
+          ]}
         />
       ) : (
         <>
           <div className="h-full">
-            <iframe src={ projectInfo?.imgUrl } className="w-full min-h-[300px]">
+            <iframe src={projectInfo?.imgUrl} className="w-full min-h-[300px]">
               你的瀏覽器不支援 iframe
             </iframe>
           </div>
@@ -95,21 +95,21 @@ const Confirm = ({ projectInfo, onChange, setProjectInfo }: IConfirm) => {
           <div className="flex space-x-2">
             <ButtonComponent
               text="Reset"
-              onClick={ handleOnReset }
-              style={ { width: "100%" } }
+              onClick={handleOnReset}
+              style={{ width: "100%" }}
             />
             <ButtonComponent
               text="Confirm"
-              style={ {
+              style={{
                 backgroundColor: "#1890ff",
                 color: "#ffffff",
                 width: "100%",
-              } }
-              onClick={ handleOnClick }
+              }}
+              onClick={handleOnClick}
             />
           </div>
         </>
-      ) }
+      )}
     </div>
   );
 };
