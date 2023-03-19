@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { assign, createMachine, sendTo } from "xstate";
+import React, { useEffect, useRef, useState } from "react";
+import { assign, createMachine } from "xstate";
 import { useMachine } from "@xstate/react";
-import style from './style.css'
-import { useDeployer } from '../../hooks/useDeployer';
-import { useNavigate } from 'react-router-dom';
+import { useDeployer } from "../../hooks/useDeployer";
+import { useNavigate } from "react-router-dom";
+import style from "./style.css";
 
 const POST_HEADER = {
   cache: "no-cache",
@@ -16,231 +16,386 @@ const POST_HEADER = {
   mode: "cors",
   redirect: "follow",
   referrer: "no-referrer",
-} as const
-
-const STATES = {
-  START: 'START',
-  GREET: 'GREET',
-  INPUT_NAME: 'INPUT_NAME',
-  INPUT_AMOUNT: 'INPUT_AMOUNT',
-  INPUT_DESCRIPTION: 'INPUT_DESCRIPTION',
-  CONFIRMING: 'CONFIRMING',
-  GENERATING_NFT: 'GENERATING_NFT',
-  PAYING: 'PAYING',
-  SUCCESS: 'SUCCESS',
-} as const
-
-const EVENTS = {
-  CLICK_START: 'CLICK_START',
-  SEND_MESSAGE: 'SEND_MESSAGE',
-  ENTER_NFT_AMOUNT: 'ENTER_NFT_AMOUNT',
-  ENTER_NFT_DESCRIPTION: 'ENTER_NFT_DESCRIPTION',
-  GENERATE_NFT: 'GENERATE_NFT',
-  CONFIRM_NFT: 'CONFIRM_NFT',
-  PAYMENT: 'PAYMENT',
 } as const;
 
-const assignProjectName = assign({
-  projectName: (_, event) => event.projectName
-});
-
-const assignAmount = assign({
-  amount: (_, event) => event.amount
-});
-
-const assignDescription = assign({
-  description: (_, event) => event.description
-});
-
-const assignImgUrl = assign({
-  imgUrl: (_, event) => event.imgUrl
-});
-
-const chatbot = createMachine({
-  predictableActionArguments: true,
-  id: "chatbot",
-  initial: STATES.START,
-  context: {
-    projectName: '',
-    amount: '',
-    description: '',
-    imgUrl: '',
-  },
-  states: {
-    [STATES.START]: {
-      on: {
-        [EVENTS.CLICK_START]: {
-          target: STATES.GREET,
-          actions: 'greet',
+const chatbotMachine = createMachine(
+  {
+    predictableActionArguments: true,
+    id: "chatbot",
+    initial: "idle",
+    context: {
+      messages: [],
+      name: "",
+      amount: "",
+      description: "",
+      imageUrl: "",
+      link: "",
+    },
+    states: {
+      idle: {
+        on: {
+          START: "greeting",
+        },
+      },
+      greeting: {
+        entry: "sendGreetingMessage",
+        after: {
+          1000: 'inputName',
         }
       },
-    },
-    [STATES.GREET]: {
-      after: {
-        1000: { target: STATES.INPUT_NAME, actions: 'botReplyEnterName', }
-      }
-    },
-    [STATES.INPUT_NAME]: {
-      on: {
-        [EVENTS.ENTER_NFT_AMOUNT]: [
-          {
-            target: STATES.INPUT_AMOUNT,
+      inputName: {
+        entry: "sendInputNameMessage",
+        on: {
+          INPUT_NAME: {
+            target: "confirmName",
             cond: 'isEnterText',
-            actions: ['enterText', assignProjectName, 'botReplyEnterAmount'],
-          }
-        ],
+            actions: "setName",
+          },
+        },
       },
-    },
-    [STATES.INPUT_AMOUNT]: {
-      on: {
-        [EVENTS.ENTER_NFT_DESCRIPTION]: [
-          {
-            target: STATES.INPUT_DESCRIPTION,
+      confirmName: {
+        entry: "sendConfirmNameMessage",
+        on: {
+          NAME_CONFIRMED: "inputAmount",
+          INPUT_NAME: "inputName",
+        },
+      },
+      inputAmount: {
+        entry: "sendInputAmountMessage",
+        on: {
+          INPUT_AMOUNT: {
+            target: "confirmAmount",
             cond: 'isEnterText',
-            actions: ['enterText', assignAmount, 'botReplyEnterDescription'],
+            actions: "setAmount",
+          },
+        },
+      },
+      confirmAmount: {
+        entry: "sendConfirmAmountMessage",
+        on: {
+          AMOUNT_CONFIRMED: "inputDescription",
+          INPUT_AMOUNT: "inputAmount",
+        },
+      },
+      inputDescription: {
+        entry: "sendInputDescriptionMessage",
+        on: {
+          INPUT_DESCRIPTION: {
+            target: "confirmDescription",
+            cond: 'isEnterText',
+            actions: "setDescription",
           }
-        ],
-
-      },
-    },
-    [STATES.INPUT_DESCRIPTION]: {
-      on: {
-        [EVENTS.GENERATE_NFT]:
-          [
-            {
-              target: STATES.GENERATING_NFT,
-              cond: 'isEnterText',
-              actions: ['enterText', assignDescription],
-            }
-          ],
-
-      },
-    },
-    [STATES.GENERATING_NFT]: {
-      invoke: {
-        src: 'fetchImage',
-        onDone: {
-          target: STATES.CONFIRMING,
         },
       },
-      on: {
-        [EVENTS.CONFIRM_NFT]: {
-          actions: [assignImgUrl]
+      confirmDescription: {
+        entry: "sendConfirmDescriptionMessage",
+        on: {
+          DESCRIPTION_CONFIRMED: "generateImage",
+          INPUT_DESCRIPTION: "inputDescription",
         },
       },
-    },
-    [STATES.CONFIRMING]: {
-      on: {
-        [EVENTS.GENERATE_NFT]: STATES.GENERATING_NFT,
-        [EVENTS.PAYMENT]: STATES.PAYING
-      },
-    },
-    [STATES.PAYING]: {
-      invoke: {
-        src: 'deploy',
-        onDone: {
-          target: STATES.SUCCESS,
+      generateImage: {
+        entry: "sendGenerateImageMessage",
+        invoke: {
+          src: (context, event) => (callback) => {
+            fetch("https://genftai.glitch.me/api/generateimg", {
+              ...POST_HEADER,
+              body: JSON.stringify({
+                description: context.description,
+              }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                callback({ type: "IMAGE_GENERATED", imageUrl: data.url });
+              });
+          },
+        },
+        on: {
+          IMAGE_GENERATED: {
+            target: "confirmImage",
+            actions: "saveImage",
+          },
         },
       },
-    },
-    [STATES.SUCCESS]: {
-      type: 'final',
+      confirmImage: {
+        on: {
+          IMAGE_CONFIRMED: "payment",
+          GENERATE_IMAGE: "generateImage",
+        },
+      },
+      payment: {
+        entry: "sendPaymentMessage",
+        invoke: {
+          src: 'deploy',
+          onError: 'payment'
+        },
+        on: {
+          PAYMENT_SUCCESS: {
+            target: "success",
+            actions: 'saveLink'
+          }
+        }
+      },
+      success: {
+        entry: "sendSuccessMessage",
+        type: "final",
+      },
     },
   },
-}, {
-  actions: { assignProjectName, assignAmount, assignDescription, assignImgUrl }
-});
-
-
-
+  {
+    actions: {
+      setName: assign((context, event) => ({
+        name: event.name,
+        messages: [...context.messages, {
+          sender_type: 'user',
+          msg_type: 'text',
+          content: event.name
+        }]
+      })),
+      setAmount: assign((context, event) => ({
+        amount: event.amount,
+        messages: [...context.messages, {
+          sender_type: 'user',
+          msg_type: 'text',
+          content: event.amount
+        }]
+      })),
+      setDescription: assign((context, event) => ({
+        description: event.description,
+        messages: [...context.messages, {
+          sender_type: 'user',
+          msg_type: 'text',
+          content: event.description
+        }]
+      })),
+      saveImage: assign((context, event) => ({
+        imageUrl: event.imageUrl,
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'img',
+          content: event.imageUrl
+        }]
+      })),
+      saveLink: assign((context, event) => ({
+        link: event.link,
+      })),
+      sendGreetingMessage: assign({
+        messages: [{
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '歡迎使用 Gen NFT AI 我是娟娟，我能夠幫您輕鬆的創照出您所想像的ＮＦＴ！'
+        }],
+      }),
+      sendInputNameMessage: assign((context) => ({
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '請先輸入 NFT 名稱！'
+        }]
+      })),
+      sendConfirmNameMessage: assign((context) => ({
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '請確認 NFT 名稱正確'
+        }]
+      })),
+      sendInputAmountMessage: assign((context) => ({
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '請輸入 NFT 數量'
+        }]
+      })),
+      sendConfirmAmountMessage: assign((context) => ({
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '請確認數量'
+        }]
+      })),
+      sendInputDescriptionMessage: assign((context) => ({
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '請描述一下您 NFT 樣子'
+        }]
+      })),
+      sendConfirmDescriptionMessage: assign((context) => ({
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '請確描述內容'
+        }]
+      })),
+      sendGenerateImageMessage: assign((context) => ({
+        messages: [...context.messages, {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '圖片生成中...'
+        }]
+      })),
+      sendPaymentMessage: () => {
+        console.log("send payment message");
+      },
+      sendSuccessMessage: assign((context) => ({
+        messages: [...context.messages,
+        {
+          sender_type: 'bot',
+          msg_type: 'text',
+          content: '完成！這是您的 NFT 網頁：'
+        },
+        {
+          sender_type: 'bot',
+          msg_type: 'link',
+          content: context.link
+        },
+        ]
+      })),
+    },
+  }
+);
 
 export default function ChatRoom() {
   const deployer = useDeployer();
   const messageRef = useRef<HTMLDivElement>();
-  const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState('');
-  const [state, send] = useMachine(chatbot, {
-    actions: {
-      greet: () => {
-        setMessages((s) => [...s, { type: 'bot', msg: 'Welcome to Gen NFT AI I am Juanjuan.' }])
-      },
-      botReplyEnterName: () => {
-        setMessages((s) => [...s, { type: 'bot', msg: 'Please enter your NFT name.' }])
-      },
-      botReplyEnterAmount: () => {
-        setMessages((s) => [...s, { type: 'bot', msg: 'Please enter NFT amount.' }])
-      },
-      botReplyEnterDescription: () => {
-        setMessages((s) => [...s, { type: 'bot', msg: 'Please enter NFT description.' }])
-      },
-      enterText: () => {
-        setMessages((s) => [...s, { type: 'user', msg: inputText }])
-      },
+  const [inputText, setInputText] = useState("");
+  const [state, send] = useMachine(chatbotMachine, {
+    guards: {
+      isEnterText: () => inputText.trim().length > 0,
     },
     services: {
-      fetchImage: (context) =>
-        fetch("https://genftai.glitch.me/api/generateimg", {
-          ...POST_HEADER,
-          body: JSON.stringify({
-            description: context.description,
-          }),
-        }).then(res => res.json()).then((data) => {
-          setMessages((s) => [...s, { type: 'bot', img: data.url }])
-          send({ type: EVENTS.CONFIRM_NFT, imgUrl: data.url })
-        }),
-      deploy: (context) => deployer.charge().then(res => {
+      deploy: (context) => (callback) => deployer.charge().then(res => {
         fetch("https://genftai.glitch.me/api/getjsonurl", {
           ...POST_HEADER,
           body: JSON.stringify({
-            name: context.projectName,
+            name: context.name,
             description: context.description,
-            image: context.imgUrl,
+            imageUrl: context.imageUrl,
           }),
         }).then(res => res.json()).then((data) => {
           localStorage.setItem("projectInfo", JSON.stringify({
+            ...context,
             mintAmount: context.amount,
-            resultLink: `/genftai/web?imgUrl=${context?.imgUrl}&projectName=${context?.projectName}&jsonUrl=${data?.url}`,
+            resultLink: `/genftai/web?imgUrl=${context?.imageUrl}&projectName=${context?.name}&jsonUrl=${data?.url}`,
             jsonUrl: data.url,
-            ...context
           }));
-          setMessages((s) => [...s, { type: 'bot', link: `/genftai/web?imgUrl=${context?.imgUrl}&projectName=${context?.projectName}&jsonUrl=${data?.url}` }])
+          callback({ type: 'PAYMENT_SUCCESS', link: `/genftai/web?imgUrl=${context?.imageUrl}&projectName=${context?.name}&jsonUrl=${data?.url}` });
         })
       }).catch(err => {
         console.log(err)
 
       })
-    },
-    guards: {
-      isEnterText: () => inputText.trim().length > 0,
     }
   });
+  let inputs;
 
-  console.log(state.value)
-  console.log(state.context)
 
   const enterInput = (e) => {
-    if (e.key !== 'Enter') return;
-    switch (state.value) {
-      case STATES.INPUT_NAME:
-        send({ type: EVENTS.ENTER_NFT_AMOUNT, projectName: inputText })
-        setInputText('');
-        break;
-      case STATES.INPUT_AMOUNT:
-        send({ type: EVENTS.ENTER_NFT_DESCRIPTION, amount: inputText })
-        setInputText('');
-        break;
-      case STATES.INPUT_DESCRIPTION:
-        send({ type: EVENTS.GENERATE_NFT, description: inputText })
-        setInputText('');
-        break;
-      default:
-        break;
+    if (e.key === 'Enter' || e.type === 'click')
+      switch (state.value) {
+        case 'inputName':
+          send({ type: 'INPUT_NAME', name: inputText })
+          setInputText('');
+          break;
+        case 'inputAmount':
+          send({ type: 'INPUT_AMOUNT', amount: inputText })
+          setInputText('');
+          break;
+        case 'inputDescription':
+          send({ type: 'INPUT_DESCRIPTION', description: inputText })
+          setInputText('');
+          break;
+        default:
+          break;
+      }
+  }
+
+  switch (state.value) {
+    case 'idle':
+      inputs = (
+        <button
+          onClick={() => {
+            send('START');
+          }}
+          className="select-none cursor-pointer rounded-lg border-2 border-blue-500 py-3 px-52 font-bold text-blue-500 transition-colors duration-200 ease-in-out active:bg-blue-200 active:text-blue-900 active:border-blue-200"
+        >
+          START
+        </button>
+      );
+      break;
+    case 'inputName':
+    case 'inputAmount':
+    case 'inputDescription':
+      inputs = (
+        <div className="relative flex">
+          <input value={inputText} onKeyDown={enterInput} onChange={({ target }) => {
+            setInputText(target.value);
+          }} type="text" placeholder="Write your message!" className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-3 bg-gray-200 rounded-md py-3" />
+          <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
+            <button onClick={enterInput} type="button" className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none">
+              <span className="font-bold">Send</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 ml-2 transform rotate-90">
+                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      );
+      break;
+    case 'confirmName':
+    case 'confirmAmount':
+    case 'confirmDescription':
+    case 'confirmImage': {
+      let event
+      if (state.matches('confirmName')) {
+        event = {
+          reset: 'INPUT_NAME',
+          resetText: 'Reset Name',
+          confirm: 'NAME_CONFIRMED'
+        }
+      }
+      if (state.matches('confirmAmount')) {
+        event = {
+          reset: 'INPUT_AMOUNT',
+          resetText: 'Reset Amount',
+          confirm: 'AMOUNT_CONFIRMED',
+
+        }
+      }
+      if (state.matches('confirmDescription')) {
+        event = {
+          reset: 'INPUT_DESCRIPTION',
+          resetText: 'Reset Description',
+          confirm: 'DESCRIPTION_CONFIRMED'
+        }
+      }
+      if (state.matches('confirmImage')) {
+        event = {
+          reset: 'GENERATE_IMAGE',
+          resetText: 'Regenerate Image',
+          confirm: 'IMAGE_CONFIRMED'
+        }
+      }
+      inputs = (
+        <div className='w-full space-x-2 flex flex-row justify-center'>
+          <button onClick={() => {
+            send(event.reset);
+          }} className='w-1/3 select-none cursor-pointer rounded-lg border-2 border-blue-500 py-3 font-bold text-blue-500 transition-colors duration-200 ease-in-out active:bg-blue-200 active:text-blue-900 active:border-blue-200'>{event.resetText}</button>
+          <button onClick={() => {
+            send(event.confirm);
+          }} className='w-1/3 select-none cursor-pointer rounded-lg border-2 border-blue-500 py-3 font-bold text-blue-500 transition-colors duration-200 ease-in-out active:bg-blue-200 active:text-blue-900 active:border-blue-200'>Confirm</button>
+        </div>
+      );
+      break;
     }
+    default:
+      break;
   }
 
   useEffect(() => {
     messageRef.current.scrollTop = messageRef.current.scrollHeight;
-  }, [])
+  }, []);
 
   return (
     <>
@@ -248,7 +403,11 @@ export default function ChatRoom() {
         <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
           <div className="relative flex items-center space-x-4">
             <div className="relative">
-              <img src="https://images.unsplash.com/photo-1591927597960-95cf948f8028?ixlib=rb-4.0.3&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144" alt="" className="w-10 sm:w-16 h-10 sm:h-16 rounded-full" />
+              <img
+                src="https://images.unsplash.com/photo-1591927597960-95cf948f8028?ixlib=rb-4.0.3&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+                alt=""
+                className="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
+              />
             </div>
             <div className="flex flex-col leading-tight">
               <div className="text-2xl mt-1 flex items-center">
@@ -257,77 +416,84 @@ export default function ChatRoom() {
             </div>
           </div>
         </div>
-        <div className='flex-1' />
-        <div ref={messageRef} id="messages" className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
+        <div className="flex-1" />
+        <div
+          ref={messageRef}
+          id="messages"
+          className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
+        >
           {
-            messages.map((msg, index) => msg.type == 'bot' ? <BotMessage key={index} message={msg.msg} img={msg.img} link={msg.link} /> : <MyMessage key={index} message={msg.msg} />)
+            state.context.messages.map((msg, index) => msg.sender_type == 'bot' ? <BotMessage key={index} {...msg} /> : <MyMessage key={index} {...msg} />)
           }
         </div>
         <div className="flex flex-col border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
-          {state.value == STATES.START
-            && <button onClick={() => {
-              send(EVENTS.CLICK_START);
-            }} className='select-none cursor-pointer rounded-lg border-2 border-blue-500 py-3 px-52 font-bold text-blue-500 transition-colors duration-200 ease-in-out active:bg-blue-200 active:text-blue-900 active:border-blue-200'>START</button>}
-          {(state.value == STATES.INPUT_NAME || state.value == STATES.INPUT_AMOUNT || state.value == STATES.INPUT_DESCRIPTION) && (
-            <div className="relative flex">
-              <input value={inputText} onKeyDown={enterInput} onChange={({ target }) => {
-                setInputText(target.value);
-              }} type="text" placeholder="Write your message!" className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-3 bg-gray-200 rounded-md py-3" />
-              <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
-                <button onClick={enterInput} type="button" className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none">
-                  <span className="font-bold">Send</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 ml-2 transform rotate-90">
-                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>)}
-          {
-            state.value == STATES.CONFIRMING && (
-              <div className='w-full space-x-2 flex flex-row justify-center'>
-                <button onClick={() => {
-                  send(EVENTS.GENERATE_NFT);
-                }} className='w-1/3 select-none cursor-pointer rounded-lg border-2 border-blue-500 py-3 font-bold text-blue-500 transition-colors duration-200 ease-in-out active:bg-blue-200 active:text-blue-900 active:border-blue-200'>Regenerate</button>
-                <button onClick={() => {
-                  send(EVENTS.PAYMENT);
-                }} className='w-1/3 select-none cursor-pointer rounded-lg border-2 border-blue-500 py-3 font-bold text-blue-500 transition-colors duration-200 ease-in-out active:bg-blue-200 active:text-blue-900 active:border-blue-200'>Confirm</button>
-              </div>
-            )
-          }
+          {inputs}
         </div>
       </div>
     </>
-  )
+  );
 }
 
-const BotMessage = ({ message, img, link }) => {
+const BotMessage = ({ msg_type, content }) => {
   const navigate = useNavigate();
+  let message;
+
+  switch (msg_type) {
+    case 'text':
+      message = (
+        <div>
+          <span className="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600">
+            {content}
+          </span>
+        </div>
+      )
+      break;
+    case 'img':
+      message = (
+        <div>
+          <img src={content} alt="" />
+        </div>
+      )
+      break;
+    case 'link':
+      message = (
+        <div>
+          <a
+            className="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600"
+            onClick={() => {
+              navigate(content);
+            }}
+          >
+            https://nft.com
+          </a>
+        </div>
+      )
+      break;
+    default:
+      break;
+  }
   return (
     <div className="chat-message">
       <div className="flex items-end">
         <div className="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-2 items-start">
-          {!!message && <div><span className="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600">{message}</span></div>}
-          {!!img && <div><img src={img} alt="" /></div>}
-          {!!link && <div><a
-            className="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600"
-            onClick={() => {
-              navigate(
-                link
-              );
-            }}>https://nft.com</a></div>}
+          {message}
         </div>
       </div>
     </div>
-  )
-}
-const MyMessage = ({ message }) => {
+  );
+};
+const MyMessage = ({ content }) => {
   return (
     <div className="chat-message">
       <div className="flex items-end justify-end">
         <div className="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-1 items-end">
-          <div><span className="px-4 py-2 rounded-lg inline-block rounded-br-none bg-blue-600 text-white ">{message}</span></div>
+          <div>
+            <span className="px-4 py-2 rounded-lg inline-block rounded-br-none bg-blue-600 text-white ">
+              {content}
+            </span>
+          </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
